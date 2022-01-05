@@ -1,3 +1,5 @@
+#!/bin/sh
+
 while true;
 do
   ping -c1 dos-server

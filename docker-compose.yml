@@ -5,7 +5,7 @@ services:
     image: dos-server
     build:
       context: ./server
-      dockerfile: Dockerfile.server
+      dockerfile: Dockerfile
     container_name: dos-server
     volumes:
       - "./server/conf/nginx/default.conf:/etc/nginx/nginx.conf:ro"
@@ -13,18 +13,6 @@ services:
       - "8185:80"
     networks:
       - custom-net
-
-  attacker:
-    image: dos-attacker
-    build:
-      context: ./attacker/
-      dockerfile: Dockerfile.attacker
-    container_name: dos-attacker
-    volumes:
-      - "./attacker/scripts:/usr/scripts"
-    networks:
-      - custom-net
-    command: ["php", "/usr/scripts/http_flood.php", "http://dos-server", "100"]
 
 networks:
   custom-net:

