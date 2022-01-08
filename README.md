@@ -14,7 +14,7 @@ docker-compose up -d
 ## Attacks
 
 ### Slowloris
-Send hanging 100 GET requests to http://dos-server
+Run `attacker/scripts/slowloris.php` to send hanging 100 GET requests to http://dos-server
 ```shell
 docker run -it --rm \
   --name slowloris \
@@ -25,7 +25,8 @@ docker run -it --rm \
 ```
 
 ### Http flood
-Send 100 async GET requests to http://dos-server by 5 iterations
+Run `attacker/scripts/http_flood.php` to send 100 async GET requests to http://dos-server 5 times
+
 ```shell
 docker run -it --rm \
   --name http-flood \
@@ -72,7 +73,7 @@ docker run -it --rm \
 ```
 
 ### UDP flood
-Run `attacker/scripts/udp_flood.php` script to sending random UDP requests
+Run `attacker/scripts/udp_flood.php` script to sending random UDP requests for 10 seconds to dos-server
 
 ```shell
 docker run -it --rm \
@@ -98,6 +99,11 @@ location / {
 }
 ```
 
+### OS protections from http flood
+```shell
+iptables -A INPUT -s 192.168.1.0/24 -j DROP
+```
+
 Or more common way to use WAF (Web application firewall). Example - https://www.cloudflare.com/lp/ppc/waf-x
 
 ### Protection from SYN flood
@@ -110,3 +116,23 @@ net.ipv4.tcp_synack_retries = 2
 net.ipv4.tcp_abort_on_overflow = 1
 ```
 
+or via iptables
+
+```shell
+iptables ­A INPUT ­p tcp ­­syn ­m limit ­­limit 1/s 
+         ­­limit­burst 3 ­j RETURN
+```
+
+### Ping and long ping protection via iptables
+```
+iptables -I FORWARD -i docker0 -p icmp -j DROP
+```
+
+### UPD flood protection via iptables
+```shell
+iptables -N udp-flood
+iptables -A OUTPUT -p udp -j udp-flood
+iptables -A udp-flood -p udp -m limit --limit 10/s -j RETURN
+iptables -A udp-flood -j LOG --log-level 4 --log-prefix 'UDP-flood attempt: '
+iptables -A udp-flood -j DROP
+```

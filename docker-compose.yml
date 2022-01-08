@@ -9,6 +9,7 @@ services:
     container_name: dos-server
     volumes:
       - "./server/conf/nginx/default.conf:/etc/nginx/nginx.conf:ro"
+      - "./server/scripts:/usr/scripts:ro"
     ports:
       - "8185:80"
     networks:
